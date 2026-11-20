@@ -505,12 +505,15 @@ const lookAt = (x, y, z, tx2, ty2, tz2) => { P6[0] = x; P6[1] = y; P6[2] = z; P6
 let nameT = 0;
 const goPose = (i, quiet) => {
   const p = POSES[i]; lookAt(p[0], p[1], p[2], p[3], p[4], p[5]);
-  F[SIDE] = p[1] > 0 ? 1 : -1; F[EXPOS] = p[1] > 0 ? EXPO_AIR : EXPO; F[WET] = 0;
+  F[SIDE] = p[1] > 0 ? 1 : -1; fav(F[SIDE]); F[EXPOS] = p[1] > 0 ? EXPO_AIR : EXPO; F[WET] = 0;
   if (quiet) return;
   const n = $('n'); n.firstChild.textContent = p[7]; n.lastChild.textContent = p[8]; n.className = 'on';
   clearTimeout(nameT); nameT = setTimeout(() => { n.className = ''; }, 2600);
 };
 
+// the tab icon follows the camera: a sketch of the lighthouse and the hill above water, kelp, a fish and bubbles below
+const favEl = $('fav'), FAV = [`data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Cpath d=%22M16 1.6C24.4 1.2 30.6 7.4 30.3 15.8 30.1 24.6 24 30.7 15.6 30.4 7.3 30.2 1.5 24.2 1.7 15.9 1.9 7.6 7.8 1.9 16 1.6Z%22 fill=%22%233f9ab0%22/%3E%3Cpath d=%22M2 8.6C6 7.4 9.6 9.4 13.4 8.2 17.4 7 20.8 9.3 24.6 8 26.6 7.4 28.3 7.6 29.4 8.2 26.6 3.9 21.7 1.5 16 1.6 10 1.8 5 4.4 2 8.6Z%22 fill=%22%239fd8d2%22/%3E%3Cpath d=%22M1.9 22C4.9 20.8 8.4 22.2 12 21.6 16.4 20.8 20.6 23 26 21.8 27.6 21.4 29 21.6 29.9 22 28 27.3 22.4 30.5 15.6 30.4 9.4 30.2 4.2 26.9 1.9 22Z%22 fill=%22%23f3e7cb%22 stroke=%22%232b3442%22 stroke-width=%221%22/%3E%3Cpath d=%22M8.6 25.6C7.6 21.6 9.8 18.6 8.4 15.2 7.2 12.4 9 10.6 8.6 9.4M11.2 25.4C11.9 21.8 10.4 19.2 11.8 16.4%22 fill=%22none%22 stroke=%22%235f8a3e%22 stroke-width=%221.5%22 stroke-linecap=%22round%22/%3E%3Cpath d=%22M17.5 17.8C19.5 15.6 23.2 15.4 25.4 17.4 23.4 19.6 19.8 19.8 17.5 17.8ZM17.6 17.8 15.6 16.2V19.6Z%22 fill=%22%23e9b75a%22 stroke=%22%232b3442%22 stroke-width=%22.9%22 stroke-linejoin=%22round%22/%3E%3Ccircle cx=%2222.5%22 cy=%2212%22 r=%221.3%22 fill=%22none%22 stroke=%22%23fffaf0%22 stroke-width=%22.9%22/%3E%3Ccircle cx=%2220.6%22 cy=%229.4%22 r=%22.9%22 fill=%22none%22 stroke=%22%23fffaf0%22 stroke-width=%22.8%22/%3E%3Ccircle cx=%2223.4%22 cy=%225.8%22 r=%221.6%22 fill=%22none%22 stroke=%22%23fffaf0%22 stroke-width=%22.9%22/%3E%3Cpath d=%22M16 1.6C24.4 1.2 30.6 7.4 30.3 15.8 30.1 24.6 24 30.7 15.6 30.4 7.3 30.2 1.5 24.2 1.7 15.9 1.9 7.6 7.8 1.9 16 1.6Z%22 fill=%22none%22 stroke=%22%232b3442%22 stroke-width=%221.7%22/%3E%3C/svg%3E`, favEl.href];
+const fav = (side) => { favEl.href = FAV[side > 0 ? 1 : 0]; };
 let menu = true, onCross = null;
 function frame(now) {
   requestAnimationFrame(frame);
@@ -563,7 +566,7 @@ function frame(now) {
     if (F[CX] > 179 || F[CZ] > 179) { const gy = landY(F[CX], F[CZ]) + 1.5; if (F[CY] < gy) { F[CY] = gy; if (F[VY] < 0) F[VY] = 0; } }
     // breaking the surface: the lens runs with water for a moment, the eye adapts, the sound changes
     const side = F[CY] > 0 ? 1 : -1;
-    if (side !== F[SIDE]) { if (side > 0) F[WET] = 1; F[SIDE] = side; if (onCross) onCross(side, sqrt(vx * vx + vy * vy + vz * vz)); }
+    if (side !== F[SIDE]) { if (side > 0) F[WET] = 1; F[SIDE] = side; fav(side); if (onCross) onCross(side, sqrt(vx * vx + vy * vy + vz * vz)); }
     F[WET] *= exp(-dt * 1.4);
     let ek = (-F[CY] - 8) / 26; ek = ek < 0 ? 0 : ek > 1 ? 1 : ek;
     F[EXPOS] += ((side > 0 ? EXPO_AIR : EXPO * (0.6 + 0.4 * ek)) - F[EXPOS]) * (1 - exp(-dt * 2.5));
