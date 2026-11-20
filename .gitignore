@@ -2,3 +2,5 @@ dev.html
 node_modules/
 .DS_Store
 *.log
+film/out/
+*.mp4

@@ -42,5 +42,8 @@
     unpin() { pin = false; },
     enter() { ui(false); },
     sound() { sound(); return AC; },
+    // film recorder: stop the frame loop, then set the camera and the clock and draw one frame at a time
+    freeze(v = true) { frozen = v; },
+    shot(t, x, y, z, yaw, pitch, roll, expo, wet) { F[TIME] = t; F[CX] = x; F[CY] = y; F[CZ] = z; F[YAW] = yaw; F[PIT] = pitch; F[ROLL] = roll; F[EXPOS] = expo; F[WET] = wet; F[SIDE] = y > 0 ? 1 : -1; draw(); return Q.onSubmittedWorkDone(); },
   };
 }
