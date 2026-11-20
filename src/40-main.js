@@ -626,6 +626,7 @@ const go = () => {
   if (!mob) capture();
 };
 bDive.onclick = go; $('o').onclick = () => ui(true);
+onPick = (i) => { if (menu && !dead) { go(); goPose(i); } };   // a number on the chart: start the dive there
 // detail buttons: the current level is lit, the others reload the page with theirs
 $('q').querySelectorAll('button').forEach((b, i) => { if (i === 2 - LV) b.className = 'on'; else b.onclick = () => { keep('lantern', 2 - i); location.href = location.pathname; }; });
 document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && !drag) ui(true); else if (!menu) body.className = document.pointerLockElement ? 'g p' : 'g'; });

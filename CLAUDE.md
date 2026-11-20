@@ -207,11 +207,12 @@ src/17-land.js      the island: height field, town layout, houses, landmarks, tr
 src/20-wgsl-bake.js noise, density field, detail texture, water texture, blit/bloom
 src/21-wgsl-scene.js shared scene code, solids, leaves, animals, sky and sea surface, sprites
 src/22-wgsl-post.js light shafts, blur, composite
+src/35-chart.js     the menu's hand-drawn chart, built from the world's data; its pins start the dive at a viewpoint
 src/40-main.js      device, resources, bakes, render loop, camera, collision, input, menu
 src/50-audio.js     the soundscape
 src/60-dev.js       fly-through, benchmark and test hooks (dev.html only)
 src/90-start.js     first frame, then the menu over the live scene
-template.html       page, menu and styles
+template.html       page, menu and styles (a sketchbook page: SVG filters roughen edges, text stays crisp)
 build.mjs           concatenates src into index.html (and dev.html with --dev); prints sizes
 .test/              headless Chrome scripts: renders, pacing, input
 ```

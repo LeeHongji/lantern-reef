@@ -60,6 +60,12 @@ the harbor and the clock tower striking. Breaking the surface splashes and swaps
 
 ## Controls
 
+![The menu: a sketchbook page with a hand-drawn chart of the reef and the island](docs/menu.jpg)
+
+The menu is a page from a sketchbook. Its chart is drawn from the world's own data while the scene loads; click a
+number on it to start the dive at that viewpoint.
+
+
 | Key | Action |
 |---|---|
 | Mouse | Look (click to capture the pointer) |
@@ -132,10 +138,11 @@ src/17-land.js        the island: ground, town, harbor, trees, farmland
 src/20-wgsl-bake.js   density field, detail texture, water texture, bloom
 src/21-wgsl-scene.js  terrain, materials, plants, animals, sky, sea surface, particles
 src/22-wgsl-post.js   light shafts and the final composite
+src/35-chart.js       the hand-drawn chart on the menu page
 src/40-main.js        device, render loop, camera, collision, input, menu
 src/50-audio.js       the soundscape
 src/60-dev.js         fly-through, benchmark and test hooks (dev.html only)
-template.html         page, menu and styles
+template.html         page, menu (a sketchbook page) and styles
 ```
 
 The scripts in `.test/` drive `dev.html` in headless Chrome with the real GPU: viewpoint renders, per-view GPU

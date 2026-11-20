@@ -4,99 +4,166 @@
 <meta charset="utf-8">
 <title>Lantern Reef</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#04141d">
+<meta name="theme-color" content="#0b2a36">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%277%27 fill=%27%2304141d%27/%3E%3Cpath d=%27M3 10q2.5-2 5 0t5 0%27 stroke=%27%239ff3ff%27 fill=%27none%27 stroke-width=%271.5%27/%3E%3C/svg%3E">
 <style>
-/* The class on <body> is the page state: l loading, m menu, g in the scene (g p with the mouse captured), l e failed */
-html { background: #04141d; }
+/* The class on <body> is the page state: l loading, m menu, g in the scene (g p with the mouse captured), l e failed.
+   The menu is a page from a sketchbook laid over the live scene: deckled paper, ink lines, watercolour washes and a
+   hand-drawn chart of the reef and the island. Rough edges come from the SVG filters below; text stays crisp. */
+:root {
+  --paper: #f3e7cb; --ink: #2b3442; --ink2: #5a5f66; --sea: #5fb3bd; --sea2: #2f7f9c; --clay: #c8613c; --moss: #7a9a52; --sun: #e9b75a;
+  --hand: "Bradley Hand", "Segoe Print", "Ink Free", "Noteworthy", "Chalkboard SE", "Comic Sans MS", cursive;
+}
+html { background: #0b2a36; }
 body {
-  position: fixed; inset: 0; margin: 0; overflow: hidden; background: radial-gradient(#0c3c50, #04141d 70%);
-  font: 600 clamp(13px, .7vw + .9vh, 30px)/1.4 system-ui, sans-serif; color: #e9fbff;
+  position: fixed; inset: 0; margin: 0; overflow: hidden; background: radial-gradient(#1d5c6e, #0b2a36 75%);
+  font: 400 clamp(12px, .62vw + .8vh, 26px)/1.35 var(--hand); color: var(--ink);
   -webkit-user-select: none; user-select: none;
 }
 canvas { position: absolute; width: 100%; height: 100%; touch-action: none; cursor: crosshair; transition: filter 1s, transform 1s, opacity 2s; }
-body:not(.g) canvas { filter: blur(.9vmax) brightness(.55); transform: scale(1.06); }
+body:not(.g) canvas { filter: blur(.7vmax) brightness(.8) saturate(.9); transform: scale(1.05); }
 .l canvas { opacity: 0; }
-#m {
-  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: min(2em, 5vmin);
-  padding: 1em; text-align: center; background: radial-gradient(#04141d00 30%, #04141dcc); transition: opacity .5s, visibility .5s;
-}
+#fx { position: absolute; width: 0; height: 0; }
+#m { position: absolute; inset: 0; display: grid; place-items: center; padding: 2vmin; transition: opacity .6s, visibility .6s; }
 .g #m, .m #l, .l #g { opacity: 0; visibility: hidden; }
-h1 {
-  margin: 0; font: 200 4.2em/1 system-ui, sans-serif; letter-spacing: .32em; text-indent: .32em; text-transform: uppercase;
-  color: #0000; background: linear-gradient(#fff 20%, #9ff3ff 60%, #35b6cf); -webkit-background-clip: text; background-clip: text;
-  filter: drop-shadow(0 .05em .25em #000c);
+/* the sheet: paper colour, fibre and stains on a layer whose edge is torn by #deckle */
+#sheet {
+  position: relative; display: grid; grid-template-columns: minmax(0, 23em) minmax(0, 27em); grid-template-areas: "head chart" "body chart";
+  align-items: center; gap: .4em 2.6em; width: min(58em, 96vw); max-height: 96vh; padding: 2.4em 2.8em 2.2em;
+  transform: rotate(-.6deg); animation: lay 1s cubic-bezier(.2, .8, .3, 1) both;
 }
-h2 { margin: -.9em 0 0; font: 500 .78em/1 system-ui, sans-serif; letter-spacing: .5em; text-indent: .5em; text-transform: uppercase; opacity: .7; }
+#sheet::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: .3em; filter: url(#deckle) drop-shadow(0 1.2em 2.2em #0007);
+  background:
+    radial-gradient(18em 11em at 88% 12%, #e9b75a26, #0000 70%), radial-gradient(22em 14em at 6% 96%, #5fb3bd24, #0000 70%),
+    radial-gradient(9em 6em at 40% 60%, #c8613c0d, #0000 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .34 0 0 0 0 .24 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--paper);
+}
+@keyframes lay { from { opacity: 0; transform: translateY(3vh) rotate(-2deg); } }
+header { grid-area: head; text-align: left; }
+h1 { position: relative; margin: 0; font: 700 3.7em/1 var(--hand); letter-spacing: .01em; color: var(--ink); white-space: nowrap; }
+/* a brush stroke of sea colour behind the title */
+h1::after {
+  content: ""; position: absolute; left: -.15em; right: .4em; bottom: -.08em; height: .42em; z-index: -1; filter: url(#wash);
+  background: linear-gradient(100deg, #5fb3bdcc, #2f7f9c99 70%, #2f7f9c00); border-radius: 40% 60% 50% 50%; transform: rotate(-1.2deg);
+}
+h2 { margin: .7em 0 0; font: 400 1.05em/1.3 var(--hand); color: var(--ink2); }
 p { margin: 0; }
-#a { display: grid; width: 30em; max-width: 100%; }
+#a { grid-area: body; display: grid; }
 #a > * { grid-area: 1/1; transition: opacity .8s, visibility .8s; }
-#s, #q, #k, #t { font-size: .78em; letter-spacing: .12em; text-transform: uppercase; }
-#p { height: .4em; margin: .4em 0 1em; overflow: hidden; border-radius: 1em; background: #04141d; box-shadow: 0 0 0 1px #9ff3ff80, 0 0 1.5em #1aa7c2; }
-#b { display: block; height: 100%; background: linear-gradient(90deg, #1aa7c2, #b4f8ff); transform: scaleX(0); transform-origin: 0; will-change: transform; }
+/* loading: a pencilled wave, inked from left to right */
+#l { align-self: center; }
+#p { position: relative; height: 1.1em; margin: .8em 0 .5em; }
+#p::before, #b { position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 5 Q5 1 10 5 T20 5 T30 5 T40 5' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 2.2em 100% repeat-x; }
+#p::before { content: ""; opacity: .16; }
+#b { display: block; filter: url(#ink); opacity: .85; transform: scaleX(0); transform-origin: 0; will-change: transform; }
+#s { font-size: 1.05em; color: var(--ink2); }
 .e #p { visibility: hidden; }
-.e #s { font-size: 1.05em; letter-spacing: 0; text-transform: none; }
-button {
-  display: flex; align-items: center; justify-content: center; padding: .8em 1.4em; border: 0; border-radius: 3em;
-  font: 700 1em/1.2 system-ui, sans-serif; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: #05242f; cursor: pointer;
-  transition: transform .12s, filter .12s;
-}
-button:hover { transform: translateY(-.1em); filter: brightness(1.12); }
-button:active { transform: translateY(.08em); filter: brightness(.92); }
-:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-#g { display: grid; gap: min(1.1em, 3vmin); }
-#d { padding: .95em; background: linear-gradient(#b4f8ff, #2cc4d8); font-size: 1.2em; box-shadow: 0 0 2.4em #2cc4d899; }
-#q, #k, #t { padding: .9em 1.5em; border-radius: .9em; background: #04141db3; }
-#q { display: flex; align-items: center; gap: .4em; padding: .4em; }
-#q span { flex: 1; color: #9ff3ff; }
-#q button { flex: 1.2; padding: .6em 0; background: none; color: #e9fbff; letter-spacing: .12em; text-indent: .12em; font-weight: 600; }
-#q button:hover { background: #9ff3ff2e; }
-#q .on { background: linear-gradient(#b4f8ff, #2cc4d8); color: #05242f; pointer-events: none; }
-#k { display: flex; justify-content: center; gap: 2em; text-align: left; }
-#k p { display: grid; grid-template-columns: auto auto; align-content: start; align-items: center; gap: .5em .9em; }
-#k p + p { padding-left: 2em; border-left: 1px solid #9ff3ff40; }
-#k i { display: flex; justify-self: end; align-items: center; gap: .25em; font-style: normal; }
-#k b { min-width: 1.1em; padding: .15em .5em; border-radius: .35em; background: #e9fbff; color: #05242f; text-align: center; }
-#t { display: none; }
+.e #s { color: var(--clay); }
+/* buttons: ink outline and wash on a roughened layer, crisp lettering on top */
+button { position: relative; isolation: isolate; border: 0; background: none; padding: .5em 1em; font: 700 1em/1.1 var(--hand); color: var(--ink); cursor: pointer; transition: transform .15s; }
+button::before { content: ""; position: absolute; inset: 0; z-index: -1; border: .12em solid var(--ink); border-radius: .5em .7em .45em .8em; filter: url(#rough); transition: background .2s; }
+button:hover { transform: rotate(-1deg) scale(1.03); }
+button:active { transform: translateY(.1em); }
+:focus-visible { outline: none; }
+/* keyboard focus: a red-pencil squiggle under the thing */
+button:focus-visible::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: -.45em; height: .32em; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4 Q6 0 11 4 T21 4 T31 4 T39 4' fill='none' stroke='%23c8613c' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 100% 100%; }
+#g { display: grid; gap: 1.1em; }
+#d { justify-self: start; min-width: 9em; padding: .55em 1.6em .6em; font-size: 1.6em; letter-spacing: .02em; transform: rotate(-1.2deg); }
+#d::before { background: linear-gradient(170deg, #7cc6c9, #3f9ab0); box-shadow: .18em .2em 0 var(--ink); }
+#d:hover { transform: rotate(.6deg) scale(1.04); }
+#d:hover::before { background: linear-gradient(170deg, #8fd3cf, #4aa8bd); }
+#q { display: flex; align-items: center; gap: .5em; font-size: 1.05em; }
+#q span { margin-right: .3em; color: var(--ink2); }
+#q button { padding: .3em .7em; font-weight: 400; }
+#q button::before { border-color: #0000; }
+#q button:hover::before { border-color: #2b344455; }
+/* the current level is circled in red pencil */
+#q .on { font-weight: 700; pointer-events: none; }
+#q .on::before { inset: -.25em -.35em; border: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'%3E%3Cpath d='M12 9 C30 1 80 2 92 12 C101 22 82 36 50 37 C18 38 2 30 5 19 C7 12 20 7 40 5' fill='none' stroke='%23c8613c' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+#k { display: flex; gap: 1.6em; font-size: .95em; color: var(--ink2); white-space: nowrap; }
+#k p { display: grid; grid-template-columns: auto auto; align-content: start; align-items: center; gap: .45em .6em; }
+#k i { display: flex; justify-self: end; align-items: center; gap: .22em; font-style: normal; color: var(--ink); }
+#k b { position: relative; isolation: isolate; min-width: 1em; padding: .05em .4em .12em; font-weight: 700; text-align: center; }
+#k b::before { content: ""; position: absolute; inset: 0; z-index: -1; border: .09em solid var(--ink); border-bottom-width: .2em; border-radius: .3em; background: #fffaf0; filter: url(#rough); }
+#t { display: none; font-size: 1em; color: var(--ink2); }
 @media (pointer: coarse), (max-height: 34em) { #k { display: none; } }
 @media (pointer: coarse) { #t { display: block; } }
-#o { position: absolute; top: .6em; right: .6em; display: none; padding: .3em .7em; background: #05242fd9; box-shadow: inset 0 0 0 1px #9ff3ff; color: #e9fbff; opacity: .8; letter-spacing: 0; text-indent: 0; }
+/* the chart */
+figure { grid-area: chart; margin: 0; }
+#chart { display: block; width: 100%; height: auto; overflow: visible; }
+#chart .ink { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s ease-out forwards; animation-delay: calc(var(--d, 0) * 1s); }
+#chart .fill { opacity: 0; animation: fade 1.6s ease-out forwards; animation-delay: calc(var(--d, 0) * 1s); }
+#chart text { font-family: var(--hand); fill: var(--ink); opacity: 0; animation: fade 1s forwards; animation-delay: calc(var(--d, 0) * 1s); }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade { to { opacity: 1; } }
+#chart .pin { cursor: pointer; opacity: 0; animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) forwards; animation-delay: calc(var(--d, 0) * 1s); transform-box: fill-box; transform-origin: center; }
+@keyframes pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
+#chart .pin circle { fill: #fffaf0; stroke: var(--clay); stroke-width: 2.4; transition: fill .2s; }
+#chart .pin text { font-weight: 700; fill: var(--clay); text-anchor: middle; dominant-baseline: central; opacity: 1; animation: none; pointer-events: none; }
+.m #chart .pin:hover circle, #chart .pin:focus-visible circle { fill: var(--clay); }
+.m #chart .pin:hover text, #chart .pin:focus-visible text { fill: #fffaf0; }
+#chart .pin:focus { outline: none; }
+.l #chart .pin { pointer-events: none; }
+figcaption { margin-top: .2em; text-align: center; font-size: .95em; color: var(--ink2); min-height: 1.4em; }
+@media (prefers-reduced-motion: reduce) { #sheet, #chart * { animation-duration: .01s !important; animation-delay: 0s !important; } }
+@media (max-width: 52em), (max-aspect-ratio: 1/1) {
+  #sheet { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "chart" "body"; width: min(32em, 94vw); padding: 1.6em 1.8em; gap: .6em; }
+  figure { justify-self: center; width: min(100%, 44vh); }
+  h1 { font-size: 3em; }
+}
+@media (max-height: 30em) { figure { display: none; } #sheet { grid-template-areas: "head" "body"; grid-template-columns: minmax(0, 1fr); width: min(30em, 94vw); } }
+/* in the scene */
+#o { position: absolute; top: .6em; right: .6em; display: none; padding: .3em .7em; font-size: 1.2em; color: var(--ink); opacity: .9; }
+#o::before { background: var(--paper); }
 .g #o { display: flex; }
 .p #o { display: none; }
-#i { position: absolute; top: 1em; left: 1.2em; margin: 0; font: .72em/1.6 ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; text-shadow: 0 1px 4px #000; pointer-events: none; }
-/* place name shown for a moment after jumping to a viewpoint */
-#n { position: absolute; left: 0; right: 0; top: 38%; text-align: center; opacity: 0; transition: opacity 1s; pointer-events: none; text-shadow: 0 2px 18px #012; }
-#n b { display: block; font: 200 2.6em/1 system-ui, sans-serif; letter-spacing: .5em; text-indent: .5em; text-transform: uppercase; }
-#n span { display: block; margin-top: 1em; font-size: .72em; letter-spacing: .5em; text-indent: .5em; text-transform: uppercase; opacity: .75; }
+#i { position: absolute; top: 1em; left: 1.2em; margin: 0; font: .72em/1.6 ui-monospace, Menlo, Consolas, monospace; color: #e9fbff; white-space: pre-wrap; text-shadow: 0 1px 4px #000; pointer-events: none; }
+/* place name shown for a moment after jumping to a viewpoint: hand lettering on the scene */
+#n { position: absolute; left: 0; right: 0; top: 36%; text-align: center; opacity: 0; transition: opacity 1s; pointer-events: none; color: #fffaf0; text-shadow: 0 .06em .5em #0b2a36cc, 0 0 .1em #0b2a36; }
+#n b { display: block; font: 700 3.2em/1 var(--hand); }
+#n span { display: block; margin-top: .5em; font: 400 1.15em/1 var(--hand); opacity: .9; }
 #n.on { opacity: 1; }
 </style>
 </head>
 <body class="l">
 <canvas id="c"></canvas>
 <div id="n"><b></b><span></span></div>
+<svg id="fx" aria-hidden="true">
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="4"/></filter>
+  <filter id="ink"><feTurbulence type="fractalNoise" baseFrequency=".08" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <filter id="wash"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="3" seed="2"/><feDisplacementMap in="SourceGraphic" scale="14"/><feGaussianBlur stdDeviation="1.2"/></filter>
+  <filter id="deckle" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="4" seed="11"/><feDisplacementMap in="SourceGraphic" scale="11"/></filter>
+</svg>
 <div id="m">
-  <h1>Lantern Reef</h1>
-  <h2>A procedural sea: reef, lagoon and harbor town</h2>
-  <div id="a">
-    <div id="l"><div id="p"><i id="b"></i></div><p id="s">Preparing&hellip;</p></div>
-    <div id="g">
-      <button id="d">Dive in</button>
-      <p id="q"><span>Detail</span><button>Low</button><button>Medium</button><button>High</button></p>
-      <div id="k">
-        <p>
-          <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Swim / fly
-          <i><b>Q</b><b>E</b></i>Down / up
-          <i><b>Shift</b></i>Faster
-          <i><b>1</b>&ndash;<b>0</b></i>Viewpoints
-        </p>
-        <p>
-          <i><b>Esc</b></i>Menu
-          <i><b>M</b></i>Mute
-          <i><b>H</b></i>Stats
-        </p>
+  <div id="sheet">
+    <header>
+      <h1>Lantern Reef</h1>
+      <h2>A procedural sea: a reef to swim through, a lagoon, and a harbor town on the hill</h2>
+    </header>
+    <div id="a">
+      <div id="l"><div id="p"><i id="b"></i></div><p id="s">Preparing&hellip;</p></div>
+      <div id="g">
+        <button id="d">Dive in</button>
+        <p id="q"><span>Detail</span><button>Low</button><button>Medium</button><button>High</button></p>
+        <div id="k">
+          <p>
+            <i><b>W</b><b>A</b><b>S</b><b>D</b></i>Swim / fly
+            <i><b>Q</b><b>E</b></i>Down / up
+            <i><b>Shift</b></i>Faster
+            <i><b>1</b>&ndash;<b>0</b></i>Viewpoints
+          </p>
+          <p>
+            <i><b>Esc</b></i>Menu
+            <i><b>M</b></i>Mute
+            <i><b>H</b></i>Stats
+          </p>
+        </div>
+        <p id="t">Hold to swim forward &middot; slide to steer &middot; second finger to go faster</p>
       </div>
-      <p id="t">Hold to swim forward &middot; slide to steer &middot; second finger to go faster</p>
     </div>
+    <figure><svg id="chart" role="img" aria-label="Chart of the reef and the island"></svg><figcaption id="cap">Pick a number to set out from there</figcaption></figure>
   </div>
 </div>
 <button id="o" aria-label="Menu">&equiv;</button>
@@ -1700,6 +1767,112 @@ const W_RBLUR = W_FS + `@group(0)@binding(0)var tR:texture_2d<f32>;@fragment fn 
 
 const W_POST = S_G + W_FS + `@group(0)@binding(0)var<uniform>g:G;@group(0)@binding(1)var sC:sampler;@group(0)@binding(2)var tS:texture_2d<f32>;@group(0)@binding(3)var tR:texture_2d<f32>;@group(0)@binding(4)var tB:texture_2d<f32>;@group(0)@binding(5)var tDp:texture_depth${AA > 1 ? '_multisampled' : ''}_2d;fn sat3(x:vec3f)->vec3f{return clamp(x,vec3f(0.),vec3f(1.));}fn tmap(x:vec3f)->vec3f{return sat3((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14));}@fragment fn fs(@builtin(position)fc:vec4f)->@location(0)vec4f{let px=vec2i(fc.xy);var uv=fc.xy*g.res.zw;let wet=g.mis.w;let run=vec2f(sin(uv.y*31.+g.cam.w*3.1)+sin(uv.y*77.-g.cam.w*4.3+uv.x*9.),cos(uv.x*23.+g.cam.w*2.3))*.006*wet*(.3+uv.y);uv+=run;let zf=g.fwd.w/max(textureLoad(tDp,px,0),1e-6);let h=fc.xy*.5-.5;let b=floor(h);let f=h-b;let bi=vec2i(b);let mx=vec2i(textureDimensions(tR))-1;var acc=vec3f(0.);var ws=0.;for(var k=0;k<4;k++){let o=vec2i(k&1,k>>1);let r=textureLoad(tR,clamp(bi+o,vec2i(0),mx),0);let bw=mix(1.-f.x,f.x,f32(o.x))*mix(1.-f.y,f.y,f32(o.y));let w=(bw+.02)/(.02+abs(r.a-zf)/zf);acc+=r.rgb*w;ws+=w;}var c=textureSampleLevel(tS,sC,uv,0.).rgb+acc/ws;let bl=textureSampleLevel(tB,sC,uv,0.).rgb;c=mix(c,bl,.06+.1*wet)+bl*(.03+.07*g.sun.w);c*=g.mis.x;let q=uv-.5;let airK=1.-g.ex.x;c*=1.-dot(q,q)*mix(.55,.14,airK);c=tmap(c);let l0=dot(c,vec3f(.2126,.7152,.0722));let l=mix(l0,l0*l0*(3.-2.*l0),mix(.55,.32,airK));c*=l/max(l0,1e-4);c=mix(c,vec3f(l),ss(.55,1.,l)*.1);c=mix(vec3f(l),c,mix(.93,1.16,airK))+vec3f(.008,.002,0.);c=pow(max(c,vec3f(0.)),vec3f(1./2.2));let n=ign(fc.xy)+ign(fc.xy+37.)-1.;return vec4f(c+n/255.,1.);}`;
 
+let onPick = null;                                   // set by the menu code: start the dive at viewpoint i
+{
+  const svg = document.getElementById('chart'), NS = 'http://www.w3.org/2000/svg';
+  svg.setAttribute('viewBox', '-200 -525 725 725');
+  const jit = (k) => { const v = Math.sin(k * 12.9898 + 78.233) * 43758.5453; return v - floor(v) - 0.5; };
+  let seq = 0;
+  const el = (tag, at, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); parent.appendChild(e); return e; };
+  const pathD = (pts, w, closed, salt) => {
+    const P = pts.map((p, i) => [p[0] + jit(i * 3.1 + salt) * w, -p[1] + jit(i * 7.7 + salt) * w]);
+    if (closed) P.push(P[0], P[1]);
+    let d = `M${((P[0][0] + P[1][0]) / 2).toFixed(1)} ${((P[0][1] + P[1][1]) / 2).toFixed(1)}`;
+    for (let i = 1; i < P.length - 1; i++) d += `Q${P[i][0].toFixed(1)} ${P[i][1].toFixed(1)} ${((P[i][0] + P[i + 1][0]) / 2).toFixed(1)} ${((P[i][1] + P[i + 1][1]) / 2).toFixed(1)}`;
+    if (!closed) d += `L${P[P.length - 1][0].toFixed(1)} ${P[P.length - 1][1].toFixed(1)}`;
+    return d;
+  };
+  const pen = (pts, o = {}) => {
+    const d = o.d ?? (seq += 0.05);
+    if (o.fill) el('path', { d: pathD(pts, (o.w ?? 2) * 2.5, o.closed, seq * 31), fill: o.fill, class: 'fill', filter: 'url(#wash)', style: `--d:${d}` });
+    for (let k = 0; k < (o.once ? 1 : 2); k++) el('path', { d: pathD(pts, o.w ?? 2, o.closed, seq * 17 + k * 5), class: 'ink', pathLength: 1,
+      style: `--d:${d + k * 0.25};stroke-width:${(o.sw ?? 1.6) * (k ? 0.6 : 1)};opacity:${k ? 0.45 : 0.9}${o.dash ? ';stroke-dasharray:' + o.dash : ''}` });
+  };
+  const circ = (cx, cz, r, n = 48) => Array.from({ length: n }, (_, i) => [cx + cos(i / n * TAU) * r, cz + sin(i / n * TAU) * r]);
+  const label = (x, z, t, size, d, rot = 0, anchor = 'middle') => { const e = el('text', { x, y: -z, 'font-size': size, 'text-anchor': anchor, transform: `rotate(${rot} ${x} ${-z})`, style: `--d:${d}` }); e.textContent = t; };
+
+  el('circle', { cx: 0, cy: 0, r: 182, fill: '#5fb3bd', 'fill-opacity': 0.32, class: 'fill', filter: 'url(#wash)', style: '--d:0' });
+  el('circle', { cx: 0, cy: 0, r: 148, fill: '#9fd8d2', 'fill-opacity': 0.45, class: 'fill', filter: 'url(#wash)', style: '--d:.1' });
+  pen(circ(0, 0, 162, 72), { w: 3, closed: true, sw: 1.3, dash: '.012 .008', d: 0.15 });
+  pen(circ(0, 0, 172, 72), { w: 4, closed: true, sw: 0.8, dash: '.004 .01', d: 0.3, once: true });
+  for (const m of MESAS) if (m[5] > 0) {
+    const r = m[4] * (m[5] > 6 ? 1.2 : 1.6), cx = (m[0] + m[2]) / 2, cz = (m[1] + m[3]) / 2;
+    pen(circ(cx, cz, r + hypot(m[2] - m[0], m[3] - m[1]) / 2, 10), { w: 2.5, closed: true, fill: '#b8a88c', sw: 1.4 });
+  }
+  const shore = [];
+  for (let i = 0; i < 120; i++) {
+    const a = i / 120 * TAU; let r = 20;
+    while (r < 280 && landF(ISLE[0] + cos(a) * r, ISLE[1] + sin(a) * r) > 0) r += 2;
+    shore.push([ISLE[0] + cos(a) * r, ISLE[1] + sin(a) * r]);
+  }
+  pen(shore, { w: 2.5, closed: true, fill: '#9cba6a', sw: 2, d: 0.6 });
+  el('path', { d: pathD(shore, 6, true, 3), fill: 'none', stroke: '#5fb3bd', 'stroke-width': 9, 'stroke-opacity': 0.35, class: 'fill', filter: 'url(#wash)', style: '--d:.6' });
+  el('circle', { cx: SUMMIT[0], cy: -SUMMIT[1], r: 70, fill: '#4f7f45', 'fill-opacity': 0.45, class: 'fill', filter: 'url(#wash)', style: '--d:.9' });
+  for (const r of [16, 34, 54]) pen(circ(SUMMIT[0], SUMMIT[1], r, 26), { w: 3, closed: true, sw: 0.9, d: 0.95 + r / 200, once: true });
+  let dabs = '';
+  for (let i = 0; i < 140; i++) {
+    const a = jit(i * 1.7) * TAU + PI, r = 18 + (jit(i * 5.3) + 0.5) * 70, x = SUMMIT[0] + cos(a) * r, z = SUMMIT[1] + sin(a) * r * 1.1, q = 4 + (jit(i * 9.1) + 0.5) * 3;
+    if (landF(x, z) < 12 || hypot(x - BAY[0], z - BAY[1]) < 150) continue;
+    dabs += `M${(x - q).toFixed(1)} ${(-z).toFixed(1)}a${q.toFixed(1)} ${(q * 0.85).toFixed(1)} 0 1 0 ${(2 * q).toFixed(1)} 0a${q.toFixed(1)} ${(q * 0.85).toFixed(1)} 0 1 0 ${(-2 * q).toFixed(1)} 0`;
+  }
+  el('path', { d: dabs, fill: '#4f7f45', 'fill-opacity': 0.7, stroke: '#2b3442', 'stroke-width': 0.7, 'stroke-opacity': 0.6, class: 'fill', style: '--d:1.05' });
+  for (let k = 0; k < 4; k++) for (let j = 0; j < 5; j++) {
+    const a = -0.38 + k * 0.17, r = 70 + j * 13, x0 = ISLE[0] + cos(a) * r, z0 = ISLE[1] + sin(a) * r, t = [-sin(a), cos(a)];
+    if (landF(x0, z0) < 20) continue;
+    pen([[x0 - t[0] * 9, z0 - t[1] * 9], [x0 + t[0] * 9, z0 + t[1] * 9]], { w: 0.4, sw: 0.9, d: 1.1 + k * 0.03, once: true });
+  }
+  let roofs = '';
+  for (let k = 0; k < RINGS.length; k++) for (let a = -0.85; a <= 0.86; a += 0.11 + 0.02 * k) {
+    if (LANES.some((l) => abs(a - l) < 0.04)) continue;
+    const [x, z] = bayPt(RINGS[k][0] + 4, a + jit(k * 9 + a * 40) * 0.03), s = 4.2 + jit(a * 77 + k) * 1.2;
+    roofs += `M${(x - s / 2).toFixed(1)} ${(-z - s / 2).toFixed(1)}h${s.toFixed(1)}v${s.toFixed(1)}h${(-s).toFixed(1)}z`;
+  }
+  el('path', { d: roofs, fill: '#c8613c', 'fill-opacity': 0.85, stroke: '#2b3442', 'stroke-width': 0.6, class: 'fill', style: '--d:1.3' });
+  const arc = (r, a0, a1, n = 24) => Array.from({ length: n + 1 }, (_, i) => bayPt(r, mix(a0, a1, i / n)));
+  pen(arc(57, -1.3, 1.3), { w: 1, sw: 2.2, d: 1.2 });
+  const mouth = (t, o) => [255.5 - t * 76.4 - o * 0.707, 178.7 + t * 76.4 - o * 0.707];   // as laid out in 17-land.js
+  pen([[0, -3], [0.15, 7], [0.3, 10], [0.4, 10]].map(([t, o]) => mouth(t, o)), { w: 1, sw: 2.6, d: 1.25 });
+  pen([[1.03, -3], [0.88, 5], [0.78, 7]].map(([t, o]) => mouth(t, o)), { w: 1, sw: 2.6, d: 1.25 });
+  { const [x, z] = bayPt(TOWER, 0); el('rect', { x: x - 3, y: -z - 3, width: 6, height: 6, fill: '#6fa596', stroke: '#2b3442', 'stroke-width': 1, class: 'fill', style: '--d:1.4' }); }
+  for (let k = 0; k < 4; k++) { const a = k * PI / 2 + 0.4; pen([[KNOLL[0], KNOLL[1]], [KNOLL[0] + cos(a) * 9, KNOLL[1] + sin(a) * 9]], { w: 0.4, sw: 1.4, d: 1.5, once: true }); }
+  el('rect', { x: LAMP[0] - 3, y: -LAMP[1] - 7, width: 6, height: 14, rx: 1.5, fill: '#fffaf0', stroke: '#c8613c', 'stroke-width': 1.6, class: 'fill', style: '--d:.5' });
+  for (const [x, z] of [[-170, 330], [-60, 280], [40, 400], [150, -150], [260, -60], [420, 60], [-180, -60], [480, 180], [-40, 470], [100, 250], [380, -150]]) pen([[x - 12, z], [x - 6, z + 4], [x, z], [x + 6, z + 4], [x + 12, z]], { w: 0.6, sw: 1.1, d: 0.3 + jit(x) * 0.4 + 0.2, once: true });
+  { const x = 450, z = 20; pen([[x - 10, z], [x + 10, z], [x + 6, z - 4], [x - 7, z - 4], [x - 10, z]], { w: 0.4, sw: 1.2, d: 1.7, once: true }); pen([[x, z], [x, z + 18], [x + 9, z + 1]], { w: 0.3, sw: 1, d: 1.75, once: true }); }
+  { const [x, z] = KETCH; pen([[x - 9, z - 1], [x + 9, z - 1], [x + 6, z - 4], [x - 7, z - 4], [x - 9, z - 1]], { w: 0.5, sw: 1.3, d: 0.7, once: true }); pen([[x, z - 1], [x, z + 13], [x + 7, z]], { w: 0.4, sw: 1.1, d: 0.75, once: true }); }
+  pen([[-128, 222], [-122, 214], [-116, 222]], { w: 0.6, sw: 1.5, d: 1.6, once: true });
+  pen([[-122, 214], [-122, 206]], { w: 0.4, sw: 1.5, d: 1.65, once: true });
+  for (let i = 0; i < 3; i++) pen([[-140 + i * 9, 200], [-136 + i * 9, 202], [-132 + i * 9, 200]], { w: 0.3, sw: 1, d: 1.7, once: true });
+  { const cx = -150, cz = 470; pen(circ(cx, cz, 26, 20), { w: 1.2, closed: true, sw: 1, d: 1.8, once: true });
+    pen([[cx, cz - 34], [cx, cz + 38]], { w: 0.4, sw: 1.2, d: 1.85, once: true }); pen([[cx - 34, cz], [cx + 34, cz]], { w: 0.4, sw: 1.2, d: 1.9, once: true });
+    label(cx, cz + 50, 'N', 22, 1.95); }
+  label(330, 120, 'Port Amaro', 30, 1.5, -8);
+  label(70, -95, 'the lagoon', 22, 0.5, -6);
+  label(70, 140, 'Lantern Rock', 18, 0.6, -14);
+  label(-150, -150, 'reef', 18, 0.4, 40);
+  const cap = document.getElementById('cap'), cap0 = cap.textContent, R = 19;
+  const at = POSES.map((p) => [p[0], -p[2]]), pos = at.map((q) => q.slice());
+  for (let it = 0; it < 120; it++) for (let i = 0; i < pos.length; i++) {
+    for (let j = 0; j < pos.length; j++) if (i !== j) {
+      let dx = pos[i][0] - pos[j][0], dy = pos[i][1] - pos[j][1]; const d = hypot(dx, dy) || 1, o = 2.3 * R - d;
+      if (o > 0) { pos[i][0] += dx / d * o * 0.4; pos[i][1] += dy / d * o * 0.4; }
+    }
+    if (it < 60) { pos[i][0] += (at[i][0] - pos[i][0]) * 0.01; pos[i][1] += (at[i][1] - pos[i][1]) * 0.01; }
+  }
+  POSES.forEach((p, i) => {
+    if (hypot(pos[i][0] - at[i][0], pos[i][1] - at[i][1]) > R * 0.8) {
+      el('path', { d: `M${at[i][0].toFixed(1)} ${at[i][1].toFixed(1)}L${pos[i][0].toFixed(1)} ${pos[i][1].toFixed(1)}`, class: 'ink', pathLength: 1, style: `--d:${1.9 + i * 0.08};stroke:#c8613c;stroke-width:1.2` });
+      el('circle', { cx: at[i][0], cy: at[i][1], r: 2.6, fill: '#c8613c', class: 'fill', style: `--d:${1.9 + i * 0.08}` });
+    }
+    const g = el('g', { class: 'pin', tabindex: 0, role: 'button', 'aria-label': `${(i + 1) % 10} ${p[7]}`, style: `--d:${2 + i * 0.08}` });
+    el('circle', { cx: pos[i][0], cy: pos[i][1], r: R }, g);
+    const t = el('text', { x: pos[i][0], y: pos[i][1] + 1.5, 'font-size': 24 }, g); t.textContent = (i + 1) % 10;
+    const show = () => { cap.textContent = `${(i + 1) % 10} · ${p[7]} — ${p[8]}`; }, hide = () => { cap.textContent = cap0; };
+    g.addEventListener('pointerenter', show); g.addEventListener('pointerleave', hide); g.addEventListener('focus', show); g.addEventListener('blur', hide);
+    g.addEventListener('click', () => onPick && onPick(i));
+    g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick && onPick(i); } });
+  });
+}
+
 const $ = (id) => document.getElementById(id);
 const canvas = $('c'), info = $('i'), body = document.body;
 let loaded = 0, dead;
@@ -2272,6 +2445,7 @@ const go = () => {
   if (!mob) capture();
 };
 bDive.onclick = go; $('o').onclick = () => ui(true);
+onPick = (i) => { if (menu && !dead) { go(); goPose(i); } };   // a number on the chart: start the dive there
 $('q').querySelectorAll('button').forEach((b, i) => { if (i === 2 - LV) b.className = 'on'; else b.onclick = () => { keep('lantern', 2 - i); location.href = location.pathname; }; });
 document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && !drag) ui(true); else if (!menu) body.className = document.pointerLockElement ? 'g p' : 'g'; });
 
